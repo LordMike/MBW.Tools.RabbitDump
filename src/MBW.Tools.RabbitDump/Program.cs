@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using MBW.Tools.RabbitDump.Movers;
 using MBW.Tools.RabbitDump.Options;
 using MBW.Tools.RabbitDump.Tool;
@@ -46,6 +47,13 @@ namespace MBW.Tools.RabbitDump
                 .UseConstructorInjection()
                 .UseDefaultHelpOption();
 
+            CancellationTokenSource consoleCancelled= new CancellationTokenSource();
+            Console.CancelKeyPress += (sender, eventArgs) =>
+            {
+                eventArgs.Cancel = true;
+                consoleCancelled.Cancel();
+            };
+
             app.OnExecute(() =>
             {
                 LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
@@ -57,6 +65,11 @@ namespace MBW.Tools.RabbitDump
 
                 Log.Logger = loggerConfiguration.CreateLogger();
 
+                consoleCancelled.Token.Register(() =>
+                {
+                    Log.Logger.Warning("Ctrl+c pressed");
+                });
+
                 hostBuilder.ConfigureServices(services =>
                 {
                     Type inputType = TargetUtilities.GetSourceType(app.Model.InputType);
@@ -65,6 +78,9 @@ namespace MBW.Tools.RabbitDump
                     services
                         .AddSingleton<ISource>(inputType)
                         .AddSingleton<IDestination>(outputType);
+                }).ConfigureServices(services =>
+                {
+                    services.AddSingleton(new ConsoleLifetime(consoleCancelled.Token));
                 });
 
                 using (IHost host = hostBuilder.Build())

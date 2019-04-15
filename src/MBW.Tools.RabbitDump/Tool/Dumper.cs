@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks.Dataflow;
 using MBW.Tools.RabbitDump.Movers;
 using MBW.Tools.RabbitDump.Utilities;
 using Microsoft.Extensions.Logging;
@@ -10,12 +10,14 @@ namespace MBW.Tools.RabbitDump.Tool
     {
         private readonly ISource _source;
         private readonly IDestination _destination;
+        private readonly ConsoleLifetime _hostLifetime;
         private readonly ILogger<Dumper> _logger;
 
-        public Dumper(ISource source, IDestination destination, ILogger<Dumper> logger)
+        public Dumper(ISource source, IDestination destination, ConsoleLifetime hostLifetime, ILogger<Dumper> logger)
         {
             _source = source;
             _destination = destination;
+            _hostLifetime = hostLifetime;
             _logger = logger;
         }
 
@@ -26,34 +28,46 @@ namespace MBW.Tools.RabbitDump.Tool
             _logger.LogDebug("Begin moving data, with {Source} => {Destination}", _source, _destination);
             try
             {
-                using (IEnumerator<MessageItem> enumerator = _source.GetData().GetEnumerator())
+                // Source => Buffer
+                // Buffer => (black box target + acknowledger)
+
+                BufferBlock<MessageItem> buffer = new BufferBlock<MessageItem>(new DataflowBlockOptions
                 {
-                    while (true)
-                    {
-                        try
-                        {
-                            bool moved = enumerator.MoveNext();
-                            if (!moved)
-                                break;
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.LogError(e, "There was an error in the source");
-                            return DumperExitCode.SourceError;
-                        }
+                    BoundedCapacity = 1000
+                });
 
-                        try
-                        {
-                            _destination.WriteData(enumerator.Current);
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.LogError(e, "There was an error in the destination");
-                            return DumperExitCode.DestinationError;
-                        }
+                (ITargetBlock<MessageItem> writer, IDataflowBlock finalBlock) targetWriter = _destination.GetWriter(_source);
 
-                        count++;
-                    }
+                TransformBlock<MessageItem, MessageItem> countingBlock = new TransformBlock<MessageItem, MessageItem>(item =>
+                {
+                    count++;
+                    if (count % 1000 == 0)
+                        _logger.LogDebug("Sent {Count} messages to destination", count);
+                    return item;
+                });
+
+                countingBlock.LinkTo(targetWriter.writer, new DataflowLinkOptions
+                {
+                    PropagateCompletion = true
+                });
+                buffer.LinkTo(countingBlock, new DataflowLinkOptions
+                {
+                    PropagateCompletion = true
+                });
+
+                // Perform data feed
+                _source.SendData(buffer, _hostLifetime.CancellationToken);
+                buffer.Complete();
+
+                // Wait for completion of writer
+                TimeSpan waitTime = TimeSpan.FromSeconds(5);
+                while (true)
+                {
+                    bool wasDone = targetWriter.finalBlock.Completion.Wait(waitTime);
+                    if (wasDone)
+                        break;
+
+                    _logger.LogDebug("Waiting for destination to complete");
                 }
             }
             catch (Exception e)

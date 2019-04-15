@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
 using MBW.Tools.RabbitDump.Movers;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -87,5 +89,72 @@ namespace MBW.Tools.RabbitDump.Options
 
         [Option("-l|--verbose-logging", Description = "Enable verbose output")]
         public bool Verbose { get; set; }
+
+        internal TransferMode TransferMode { get; set; } = TransferMode.OneShot;
+
+        [Option("-c|--continuous", Description = "Continue subscribing to events from the Input")]
+        public bool UseContinuous
+        {
+            get => TransferMode == TransferMode.Continuous;
+            set => TransferMode = TransferMode.Continuous;
+        }
+
+        [Option("-s|--single-shot", Description = "Only run the data move once - we'll make best efforts to stop in a timely manner")]
+        public bool UseSingleShot
+        {
+            get => TransferMode == TransferMode.OneShot;
+            set => TransferMode = TransferMode.OneShot;
+        }
+
+        [Option("--count", Description = "Limit the transfer to a number of items")]
+        [Range(1, int.MaxValue)]
+        public int? MessageLimit { get; set; }
+
+        // ReSharper disable once UnusedMember.Global
+        public ValidationResult OnValidate()
+        {
+            // Input/output types
+            switch (InputType)
+            {
+                case InputType.Amqp:
+                    if (!IsValidAmqp(Input))
+                        return new ValidationResult("Invalid AMQP uri in input");
+                    break;
+                case InputType.Zip:
+                    if (!File.Exists(Input))
+                        return new ValidationResult("The input zip file does not exist");
+                    break;
+                default:
+                    return new ValidationResult("Unknown input type");
+            }
+
+            switch (OutputType)
+            {
+                case OutputType.Amqp:
+                    if (!IsValidAmqp(Output))
+                        return new ValidationResult("Invalid AMQP uri in output");
+                    break;
+                case OutputType.Zip:
+                    if (File.Exists(Output))
+                        return new ValidationResult("The output zip file already exists");
+                    break;
+                default:
+                    return new ValidationResult("Unknown output type");
+            }
+
+            // Input AMQP must have queues
+            if (InputType == InputType.Amqp && !Arguments.Any())
+                return new ValidationResult("Missing queues for input");
+
+            return ValidationResult.Success;
+        }
+
+        private bool IsValidAmqp(string amqp)
+        {
+            if (!Uri.TryCreate(amqp, UriKind.Absolute, out var uri))
+                return false;
+
+            return string.Equals("amqp", uri.Scheme, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

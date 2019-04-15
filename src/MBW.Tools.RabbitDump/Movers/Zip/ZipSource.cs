@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
+using System.Threading.Tasks.Dataflow;
 using MBW.Tools.RabbitDump.Options;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -20,7 +22,12 @@ namespace MBW.Tools.RabbitDump.Movers.Zip
             _zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
         }
 
-        public IEnumerable<MessageItem> GetData()
+        public override void Dispose()
+        {
+            _zip.Dispose();
+        }
+
+        public void SendData(ITargetBlock<MessageItem> target, CancellationToken cancellationToken)
         {
             using (MemoryStream msBuffer = new MemoryStream())
             {
@@ -49,14 +56,13 @@ namespace MBW.Tools.RabbitDump.Movers.Zip
 
                     mi.Data = data;
 
-                    yield return mi;
+                    target.Post(mi);
                 }
             }
         }
 
-        public override void Dispose()
+        public void Acknowledge(ICollection<MessageItem> items)
         {
-            _zip.Dispose();
         }
     }
 }

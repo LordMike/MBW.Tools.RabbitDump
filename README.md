@@ -28,9 +28,6 @@ rabbitdump --input data.zip --output amqp://myuser:mypass@server:port/vhost
 
 ### Todo
 
-* Validation on arguments from commandline (source zip must exist, target zip must not exist, amqp source requires arguments / queues ..)
-* Use subscriptions to read AMQP messages faster (replace current BasicGet loop)
 * Replay messages with same delays as when they were first created
 * RabbitMQ API support to list queues, support wildcards in queue names
-* Allow one-shot and continous transfers
 * Add AWS SQS queues

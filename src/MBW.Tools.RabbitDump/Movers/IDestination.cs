@@ -1,7 +1,9 @@
-﻿namespace MBW.Tools.RabbitDump.Movers
+﻿using System.Threading.Tasks.Dataflow;
+
+namespace MBW.Tools.RabbitDump.Movers
 {
     interface IDestination
     {
-        void WriteData(MessageItem item);
+        (ITargetBlock<MessageItem> writer, IDataflowBlock finalBlock) GetWriter(ISource acknowledgeSource);
     }
 }
