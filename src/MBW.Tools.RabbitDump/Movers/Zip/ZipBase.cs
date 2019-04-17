@@ -9,9 +9,6 @@ namespace MBW.Tools.RabbitDump.Movers.Zip
         protected const string DataExtension = ".data";
         protected const string MetaExtension = ".meta";
 
-        protected readonly UTF8Encoding Encoding = new UTF8Encoding(false);
-        protected readonly JsonSerializer Serializer = JsonSerializer.Create();
-
         public abstract void Dispose();
     }
 }

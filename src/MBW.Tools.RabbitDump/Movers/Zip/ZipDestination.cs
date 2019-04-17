@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks.Dataflow;
 using MBW.Tools.RabbitDump.Options;
+using MBW.Tools.RabbitDump.Utilities;
 using Newtonsoft.Json;
 
 namespace MBW.Tools.RabbitDump.Movers.Zip
@@ -25,21 +26,21 @@ namespace MBW.Tools.RabbitDump.Movers.Zip
 
         public (ITargetBlock<MessageItem> writer, IDataflowBlock finalBlock) GetWriter(ISource acknowledgeSource)
         {
+            // Prepare file name format
+            string nameFormat = $"m-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}-";
+            int idx = 0;
+
             ActionBlock<MessageItem> block = new ActionBlock<MessageItem>(item =>
             {
-                Guid id = Guid.NewGuid();
+                string name = nameFormat + idx++;
 
-                ZipArchiveEntry entry = _zip.CreateEntry(id + DataExtension, CompressionLevel.Optimal);
+                ZipArchiveEntry entry = _zip.CreateEntry(name + DataExtension, CompressionLevel.Optimal);
                 using (Stream entryFs = entry.Open())
                     entryFs.Write(item.Data);
 
-                entry = _zip.CreateEntry(id + MetaExtension, CompressionLevel.Optimal);
+                entry = _zip.CreateEntry(name + MetaExtension, CompressionLevel.Optimal);
                 using (Stream entryFs = entry.Open())
-                {
-                    using (StreamWriter sw = new StreamWriter(entryFs, Encoding))
-                    using (JsonTextWriter tw = new JsonTextWriter(sw))
-                        Serializer.Serialize(tw, item);
-                }
+                    Serialization.Serialize(entryFs, item);
 
                 acknowledgeSource.Acknowledge(new List<MessageItem> { item });
             });

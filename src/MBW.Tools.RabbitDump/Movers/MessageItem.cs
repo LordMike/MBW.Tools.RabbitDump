@@ -9,10 +9,13 @@ namespace MBW.Tools.RabbitDump.Movers
         [JsonIgnore]
         public byte[] Data { get; set; }
 
+        [JsonProperty("r")]
         public string RoutingKey { get; set; }
 
+        [JsonProperty("e")]
         public string Exchange { get; set; }
 
+        [JsonProperty("ts")]
         public DateTime? Created { get; set; }
 
         [JsonExtensionData]
