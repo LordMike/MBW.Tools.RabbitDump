@@ -99,8 +99,8 @@ namespace MBW.Tools.RabbitDump.Options
             set => TransferMode = TransferMode.Continuous;
         }
 
-        [Option("-s|--single-shot", Description = "Only run the data move once - we'll make best efforts to stop in a timely manner")]
-        public bool UseSingleShot
+        [Option("-s|--one-shot", Description = "Only run the data move once - we'll make best efforts to stop in a timely manner for AMQP inputs")]
+        public bool UseOneShot
         {
             get => TransferMode == TransferMode.OneShot;
             set => TransferMode = TransferMode.OneShot;
@@ -123,6 +123,8 @@ namespace MBW.Tools.RabbitDump.Options
                 case InputType.Zip:
                     if (!File.Exists(Input))
                         return new ValidationResult("The input zip file does not exist");
+                    if (!UseOneShot)
+                        return new ValidationResult("Zip inputs can only be one-shots");
                     break;
                 default:
                     return new ValidationResult("Unknown input type");

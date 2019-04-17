@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks.Dataflow;
 using MBW.Tools.RabbitDump.Options;
@@ -57,7 +57,7 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
                             basicProperties.Headers.Add(key, value);
                     }
 
-                    batch.Add(exchange, routingKey, false, basicProperties, item.Data);
+                    batch.Add(exchange, routingKey, true, basicProperties, item.Data);
                 }
 
                 _logger.LogDebug("Writing {Count} messages to AMQP", items.Length);
