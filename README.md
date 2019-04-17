@@ -5,6 +5,8 @@ A `dotnet tool` to import / export from RabbitMQ queues
 ### Features
 
 * Define source and destinations and move messages between them
+* Fast exports and imports (using batches and push-based subscriptions)
+* Runnable and installable as a tool using `dotnet tool`
 
 ### Packages
 
@@ -49,4 +51,4 @@ RabbitDump supports these destinations
 * Replay messages with same delays as when they were first created
 * RabbitMQ API support to list queues, support wildcards in queue names
 * Add AWS SQS queues
-* Append to zip outputs
+* Option to append to zip outputs
