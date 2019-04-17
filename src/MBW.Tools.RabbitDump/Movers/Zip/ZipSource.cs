@@ -13,35 +13,34 @@ namespace MBW.Tools.RabbitDump.Movers.Zip
 {
     class ZipSource : ZipBase, ISource
     {
+        private readonly ArgumentsModel _model;
         private readonly ILogger<ZipSource> _logger;
-        private readonly ZipArchive _zip;
 
         public ZipSource(ArgumentsModel model, ILogger<ZipSource> logger)
         {
+            _model = model;
             _logger = logger;
-            FileStream zipFs = File.OpenRead(model.Input);
-            _zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
-        }
-
-        public override void Dispose()
-        {
-            _zip.Dispose();
         }
 
         public void SendData(ITargetBlock<MessageItem> target, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("Reading zip file at {File}", _model.Input);
+
+            using (FileStream zipFs = File.OpenRead(_model.Input))
+            using (ZipArchive zip = new ZipArchive(zipFs, ZipArchiveMode.Read))
             using (MemoryStream msBuffer = new MemoryStream())
             {
-                _logger.LogDebug("Reading {FilesCount} files ({Count} messages) from zip file", _zip.Entries.Count, _zip.Entries.Count / 2);
+                _logger.LogDebug("Reading {FilesCount} files ({Count} messages) from zip file", zip.Entries.Count,
+                    zip.Entries.Count / 2);
 
-                var entries = _zip.Entries
+                var entries = zip.Entries
                     .Where(s => s.Name.EndsWith(DataExtension, StringComparison.Ordinal))
                     .Select(s => s.FullName)
                     .OrderBy(s => s);
 
                 foreach (string name in entries)
                 {
-                    ZipArchiveEntry entry = _zip.GetEntry(name);
+                    ZipArchiveEntry entry = zip.GetEntry(name);
 
                     byte[] data;
                     using (Stream fs = entry.Open())
@@ -51,7 +50,7 @@ namespace MBW.Tools.RabbitDump.Movers.Zip
                         msBuffer.SetLength(0);
                     }
 
-                    ZipArchiveEntry metaEntry = _zip.GetEntry(Path.ChangeExtension(entry.FullName, MetaExtension));
+                    ZipArchiveEntry metaEntry = zip.GetEntry(Path.ChangeExtension(entry.FullName, MetaExtension));
 
                     MessageItem mi;
                     using (Stream fs = metaEntry.Open())

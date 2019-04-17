@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks.Dataflow;
@@ -24,7 +24,10 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
             _logger = logger;
             _remaining = model.MessageLimit ?? -1;
 
-            UriConnectionFactory connectionFactory = new UriConnectionFactory(new Uri(model.Input));
+            Uri amqpUri = new Uri(model.Input);
+            _logger.LogDebug("Connecting to AMQP for reading at {Uri}", amqpUri);
+
+            UriConnectionFactory connectionFactory = new UriConnectionFactory(amqpUri);
 
             _connection = connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();

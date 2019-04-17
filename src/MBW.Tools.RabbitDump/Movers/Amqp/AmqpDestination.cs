@@ -20,7 +20,11 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
             _model = model;
             _logger = logger;
 
-            UriConnectionFactory connectionFactory = new UriConnectionFactory(new Uri(model.Output));
+            Uri amqpUri = new Uri(model.Output);
+            _logger.LogDebug("Connecting to AMQP for writing at {Uri}", amqpUri);
+
+            UriConnectionFactory connectionFactory = new UriConnectionFactory(amqpUri);
+
             _connection = connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
         }
