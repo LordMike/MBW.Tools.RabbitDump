@@ -82,7 +82,7 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
 
                     _channel.BasicCancel(consumer.ConsumerTag);
                 }
-                else if (_model.UseSingleShot)
+                else if (_model.UseOneShot)
                 {
                     // One-shot: Wait for cancellationToken, or no message from source for X seconds
                     TimeSpan idleTime = TimeSpan.FromSeconds(5);
