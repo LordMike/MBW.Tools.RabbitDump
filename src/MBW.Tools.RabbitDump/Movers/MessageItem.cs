@@ -9,6 +9,9 @@ namespace MBW.Tools.RabbitDump.Movers
         [JsonIgnore]
         public byte[] Data { get; set; }
 
+        [JsonProperty("p")]
+        public bool Persistent { get; set; }
+
         [JsonProperty("r")]
         public string RoutingKey { get; set; }
 

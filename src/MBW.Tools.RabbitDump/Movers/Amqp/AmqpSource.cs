@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks.Dataflow;
@@ -140,6 +140,7 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
             MessageItem data = new AmqpMessageItem
             {
                 Data = item.Body,
+                Persistent = item.BasicProperties.Persistent,
                 Exchange = item.Exchange,
                 RoutingKey = item.RoutingKey,
                 Properties = properties,

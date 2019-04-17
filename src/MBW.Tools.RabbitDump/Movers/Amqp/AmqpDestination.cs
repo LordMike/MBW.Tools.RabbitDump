@@ -49,7 +49,8 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
 
                     BasicProperties basicProperties = new BasicProperties
                     {
-                        Headers = new Dictionary<string, object>()
+                        Headers = new Dictionary<string, object>(),
+                        Persistent = item.Persistent
                     };
 
                     if (item.Created.HasValue)
