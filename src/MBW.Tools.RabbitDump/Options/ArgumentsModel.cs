@@ -26,6 +26,9 @@ namespace MBW.Tools.RabbitDump.Options
                 if (!_inputType.HasValue)
                 {
                     // Detect type
+                    if (string.IsNullOrEmpty(Input))
+                        return InputType.Unset;
+
                     if (Input.StartsWith("amqp://", StringComparison.OrdinalIgnoreCase))
                         _inputType = InputType.Amqp;
                     else if (Input.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
@@ -51,6 +54,9 @@ namespace MBW.Tools.RabbitDump.Options
                 if (!_outputType.HasValue)
                 {
                     // Detect type
+                    if (string.IsNullOrEmpty(Output))
+                        return OutputType.Unset;
+
                     if (Output.StartsWith("amqp://", StringComparison.OrdinalIgnoreCase))
                         _outputType = OutputType.Amqp;
                     else if (Output.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
