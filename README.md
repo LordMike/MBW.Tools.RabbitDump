@@ -7,6 +7,7 @@ A `dotnet tool` to import / export from RabbitMQ queues
 * Define source and destinations and move messages between them
 * Fast exports and imports (using batches and push-based subscriptions)
 * Runnable and installable as a tool using `dotnet tool`
+* Supports one-shot and continuous transfers of messages
 
 ### Packages
 
