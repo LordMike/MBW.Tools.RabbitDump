@@ -154,12 +154,10 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
 
         public void Acknowledge(ICollection<MessageItem> items)
         {
-            int added = 0, target = items.Count - 1;
-            foreach (AmqpMessageItem item in items)
+            foreach (MessageItem messageItem in items)
             {
-                bool isLast = ++added == target;
-
-                _channel.BasicAck(item.DeliveryTag, !isLast);
+                AmqpMessageItem item = (AmqpMessageItem) messageItem;
+                _channel.BasicAck(item.DeliveryTag, false);
             }
         }
 
