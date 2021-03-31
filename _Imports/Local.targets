@@ -1,0 +1,16 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Package -->
+
+  <PropertyGroup>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Product>MBW.Tools.RabbitDump</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/LordMike/MBW.Tools.RabbitDump</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/LordMike/MBW.Tools.RabbitDump</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+</Project>

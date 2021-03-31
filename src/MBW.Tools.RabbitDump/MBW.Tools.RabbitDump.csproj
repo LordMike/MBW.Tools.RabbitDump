@@ -1,20 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\imports\Library.targets" />
 
   <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    
+    <Description>Tool to import and export messages from RabbitMQ queues</Description>
+
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>rabbitdump</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
-    <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="2.3.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
+    <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
   </ItemGroup>
 

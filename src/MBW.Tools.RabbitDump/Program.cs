@@ -25,11 +25,11 @@ namespace MBW.Tools.RabbitDump
             CommandLineApplication<ArgumentsModel> app = new CommandLineApplication<ArgumentsModel>();
 
             IHostBuilder hostBuilder = new HostBuilder()
-                .ConfigureLogging((context, builder) =>
+                .ConfigureLogging(builder =>
                 {
                     builder.AddSerilog(dispose: true);
                 })
-                .ConfigureServices((context, services) =>
+                .ConfigureServices(services =>
                 {
                     services.AddSingleton(app.Model);
                     services.AddSingleton<Dumper>();
@@ -67,7 +67,7 @@ namespace MBW.Tools.RabbitDump
 
                 consoleCancelled.Token.Register(() =>
                 {
-                    Log.Logger.Warning("Ctrl+c pressed");
+                    Log.Logger.Warning("Ctrl+C pressed");
                 });
 
                 hostBuilder.ConfigureServices(services =>

@@ -1,4 +1,4 @@
-# MBW.Tools.RabbitDump
+# MBW.Tools.RabbitDump [![Generic Build](https://github.com/LordMike/MBW.Tools.RabbitDump/actions/workflows/dotnet.yml/badge.svg)](https://github.com/LordMike/MBW.Tools.RabbitDump/actions/workflows/dotnet.yml) [![NuGet](https://img.shields.io/nuget/v/MBW.Tools.RabbitDump.svg)](https://www.nuget.org/packages/MBW.Tools.RabbitDump) [![GHPackages](https://img.shields.io/badge/package-alpha-green)](https://github.com/LordMike/MBW.Tools.RabbitDump/packages/??)
 
 A `dotnet tool` to import / export from RabbitMQ queues
 
@@ -8,12 +8,6 @@ A `dotnet tool` to import / export from RabbitMQ queues
 * Fast exports and imports (using batches and push-based subscriptions)
 * Runnable and installable as a tool using `dotnet tool`
 * Supports one-shot and continuous transfers of messages
-
-### Packages
-
-| Package | Nuget |
-| ------------- |:-------------:|
-| MBW.Tools.RabbitDump | [![NuGet](https://img.shields.io/nuget/v/MBW.Tools.RabbitDump.svg)](https://www.nuget.org/packages/MBW.Tools.RabbitDump) |
 
 ### Usage
 
