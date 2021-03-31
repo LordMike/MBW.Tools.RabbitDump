@@ -83,7 +83,8 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
 
                     combinedSource.Token.WaitHandle.WaitOne();
 
-                    _channel.BasicCancel(consumer.ConsumerTag);
+                    foreach (string consumerTag in consumer.ConsumerTags)
+                        _channel.BasicCancel(consumerTag);
                 }
                 else if (_model.UseOneShot)
                 {
@@ -112,7 +113,9 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
 
                             internalSource.Cancel();
 
-                            _channel.BasicCancel(consumer.ConsumerTag);
+                            foreach (string consumerTag in consumer.ConsumerTags)
+                                _channel.BasicCancel(consumerTag);
+
                             break;
                         }
 
@@ -139,7 +142,7 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
 
             MessageItem data = new AmqpMessageItem
             {
-                Data = item.Body,
+                Data = item.Body.ToArray(),
                 Persistent = item.BasicProperties.Persistent,
                 Exchange = item.Exchange,
                 RoutingKey = item.RoutingKey,
@@ -156,7 +159,7 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
         {
             foreach (MessageItem messageItem in items)
             {
-                AmqpMessageItem item = (AmqpMessageItem) messageItem;
+                AmqpMessageItem item = (AmqpMessageItem)messageItem;
                 _channel.BasicAck(item.DeliveryTag, false);
             }
         }

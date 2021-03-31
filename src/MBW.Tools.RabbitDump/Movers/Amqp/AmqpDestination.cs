@@ -47,11 +47,9 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
                     string exchange = _model.Exchange ?? item.Exchange;
                     string routingKey = _model.RoutingKey ?? item.RoutingKey;
 
-                    BasicProperties basicProperties = new BasicProperties
-                    {
-                        Headers = new Dictionary<string, object>(),
-                        Persistent = item.Persistent
-                    };
+                    IBasicProperties basicProperties = _channel.CreateBasicProperties();
+                    basicProperties.Headers = new Dictionary<string, object>();
+                    basicProperties.Persistent = item.Persistent;
 
                     if (item.Created.HasValue)
                         basicProperties.Timestamp = new AmqpTimestamp(((DateTimeOffset)item.Created).ToUnixTimeSeconds());
