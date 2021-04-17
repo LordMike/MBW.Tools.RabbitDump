@@ -26,8 +26,6 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
                 VirtualHost = uri.AbsolutePath == "/" ? "/" : uri.AbsolutePath.Remove(0, 1),
                 AutomaticRecoveryEnabled = true
             };
-
-            Console.WriteLine($"Virtual host = '{_connectionFactoryImplementation.VirtualHost}'");
         }
 
         public IConnection CreateConnection()
