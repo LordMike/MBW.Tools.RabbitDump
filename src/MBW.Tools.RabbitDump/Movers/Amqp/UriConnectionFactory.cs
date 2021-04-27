@@ -13,8 +13,8 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
             string user = null, password = null;
             if (userSplits != null && userSplits.Length == 2)
             {
-                user = userSplits[0];
-                password = userSplits[1];
+                user = Uri.UnescapeDataString(userSplits[0]);
+                password = Uri.UnescapeDataString(userSplits[1]);
             }
 
             _connectionFactoryImplementation = new ConnectionFactory
