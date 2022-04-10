@@ -23,7 +23,7 @@ namespace MBW.Tools.RabbitDump.Movers.Amqp
                 Port = uri.IsDefaultPort ? 5672 : uri.Port,
                 UserName = user,
                 Password = password,
-                VirtualHost = uri.AbsolutePath,
+                VirtualHost = uri.AbsolutePath == "/" ? "/" : uri.AbsolutePath.Remove(0, 1),
                 AutomaticRecoveryEnabled = true
             };
         }
