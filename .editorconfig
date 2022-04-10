@@ -3,4 +3,9 @@
 dotnet_diagnostic.CS4014.severity = error
 
 # CS1591: Missing XML comment for publicly visible type or member 'Type_or_Member'
-dotnet_diagnostic.CS1591.severity = hidden
+dotnet_diagnostic.CS1591.severity = silent
+
+[*.{targets,csproj}]
+tab_width=2
+indent_style=space
+indent_size=2
